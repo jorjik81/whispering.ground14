@@ -2,19 +2,15 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-//const controllers = require('./controllers');
 const routes = require('./controllers');
-const helpers = require('./utils/helpers');
 const sessionMiddleware = require('./sessionMiddleware');
-
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Set up Handlebars.js engine with custom helpers
-const hbs = exphbs.create({ helpers });
+const hbs = exphbs.create(); // Updated without helpers
 
 const sess = {
   secret: 'Super secret secret',
@@ -32,38 +28,16 @@ const sess = {
 };
 
 app.use(session(sess));
-
-// Inform Express.js on which template engine to use
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(routes);
 
-sequelize.sync({ force: false }).then(() => {
+sequelize.sync({ force: false }).then(() => {});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-
-// Set up session middleware
-app.use(
-  session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true },
-  })
-);
-
-// Use the session middleware
-app.use(sessionMiddleware);
-
-// Your other routes and middleware...
-
-// Start the server
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
-

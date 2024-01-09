@@ -3,15 +3,24 @@ const Project = require('./Comment');
 const BlogPost = require('./BlogPost');
 
 // Update the User-Project relationship to include the updated User model
-User.hasMany(Project, {
+User.hasMany(BlogPost, {
   foreignKey: 'user_id',
   onDelete: 'CASCADE',
 });
 
-Project.belongsTo(User, {
+BlogPost.belongsTo(User, {
   foreignKey: 'user_id',
 });
+BlogPost.hasMany(Comment, {
+  foreignKey: 'blogpost_id',
+  onDelete: 'CASCADE',
 
-module.exports = { User, Project, BlogPost };
+});
+
+Comment.belongsTo(Blogpost, {
+  foreignKey: 'blogpost_id',
+});
+
+module.exports = { User, BlogPost, Comment };
 
 
